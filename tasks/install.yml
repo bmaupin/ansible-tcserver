@@ -1,0 +1,49 @@
+---
+- name: Enable Oracle Java repo
+  shell: subscription-manager repos --list-enabled | grep -q rhel-{{ ansible_distribution_major_version }}-server-thirdparty-oracle-java-rpms || subscription-manager repos --enable=rhel-{{ ansible_distribution_major_version }}-server-thirdparty-oracle-java-rpms
+  register: result
+  changed_when: result.stdout.find('is enabled for this system') != -1
+
+- name: Install Oracle Java {{ tcserver_java_version }} JRE
+  package:
+    name: java-1.{{ tcserver_java_version }}.0-oracle
+    state: latest
+
+- name: Install Oracle Java {{ tcserver_java_version }} JDK
+  package:
+    name: java-1.{{ tcserver_java_version }}.0-oracle-devel
+    state: latest
+
+- name: Create {{ tcserver_group }} group
+  group:
+    name: "{{ tcserver_group }}"
+
+- name: Create /etc/pivotal directory
+  file:
+    dest: /etc/pivotal
+    owner: root
+    group: "{{ tcserver_group }}"
+    state: directory
+
+- name: Copy Pivotal license acceptance file
+  copy:
+    src: ../files/install/accepted-Pivotal_EULA.txt
+    dest: /etc/pivotal/accepted-Pivotal_EULA.txt
+    owner: root
+    group: "{{ tcserver_group }}"
+
+- name: Install wget
+  package:
+    name: wget
+    state: latest
+
+# TODO: convert the contents of this script to ansible tasks
+- name: Install the Pivotal repository
+  shell: wget -q -O - http://packages.pivotal.io | sh
+  args:
+    creates: /etc/yum.repos.d/pivotal-app-suite.repo
+
+- name: Install Pivotal tc Server
+  package:
+    name: pivotal-tc-server-standard
+    state: latest
