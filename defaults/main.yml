@@ -1,4 +1,6 @@
 ---
+java_home: /usr/lib/jvm/java
+
 tcserver_group: pivotal
 tcserver_java_version: 7
 tcserver_user: tcserver
