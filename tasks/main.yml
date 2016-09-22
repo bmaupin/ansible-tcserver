@@ -1,7 +1,17 @@
 ---
-- include: install.yml
+- name: Install tc Server
+  include: install.yml
   become: yes
 
-- include: configure.yml
+- name: Configure tc Server
+  include: configure.yml
   become: yes
   become_user: "{{ tcserver_user }}"
+
+- name: Configure instances
+  include: configure-instances.yml
+  become: yes
+  become_user: "{{ tcserver_user }}"
+  with_items: "{{ tcserver_instances }}"
+  loop_control:
+    loop_var: tcserver_instance

@@ -3,13 +3,13 @@
   shell: ls -d -r "{{ tcserver_install_dir }}/tomcat-7"* | head -1 | sed -e 's/^.*tomcat-//'
   register: tomcat_7_latest_version
   # Don't report this as changed
-  changed_when: False
+  changed_when: false
 
 - name: Get latest version of tomcat 8
   shell: ls -d -r "{{ tcserver_install_dir }}/tomcat-8"* | head -1 | sed -e 's/^.*tomcat-//'
   register: tomcat_8_latest_version
   # Don't report this as changed
-  changed_when: False
+  changed_when: false
 
 - name: Set tomcat_latest_versions
   set_fact:
@@ -19,32 +19,3 @@
   with_items:
     - { major_version: 7, specific_version: "{{ tomcat_7_latest_version.stdout }}" }
     - { major_version: 8, specific_version: "{{ tomcat_8_latest_version.stdout }}" }
-
-- name: Create tcserver instances
-  shell: >
-    {{ tcserver_install_dir }}/tcruntime-instance.sh create
-    {% if "tomcat_major_version" in item %}-v {{ tomcat_latest_versions[item.tomcat_major_version] }}{% endif %}
-    {% if "port_jmx" in item %}--property base.jmx.port={{ item.port_jmx }}{% endif %}
-    {% if "port_ajp_http" in item or "port_ajp_https" in item %}-t ajp{% endif %}
-    {% if "port_ajp_http" in item %}--property ajp.http.port={{item.port_ajp_http}}{% endif %}
-    {% if "port_ajp_https" in item %}--property ajp.https.port={{item.port_ajp_https}}{% endif %}
-    {% if "cluster_node_name" in item %}-t cluster-node --property cluster-node.node.name={{item.cluster_node_name}}{% endif %}
-    {# TODO: is elastic memory still available? #}
-    {# {% if "elastic_memory" in item and item.elastic_memory %}-t elastic-memory{% endif %} #}
-    {% if "port_http" in item %}-t nio --property nio.http.port={{item.port_http}}{% endif %}
-    {% if "port_https" in item %}-t nio-ssl --property nio-ssl.https.port={{ item.port_https }}{% endif %}
-    {% if "port_http" in item and "port_https" in item %}--property nio.https.port={{item.port_https}}{% endif %}
-    -i {{ tcserver_instance_base }}/ {{ item.name }}
-  args:
-    creates: "{{ tcserver_instance_base }}/{{ item.name }}"
-  environment:
-    JAVA_HOME: "{{ java_home }}"
-  with_items: "{{ tcserver_instances }}"
-
-- name: Configure init scripts
-  replace:
-    dest: "{{ tcserver_instance_base }}/{{ item }}/bin/init.d.sh"
-    regexp: <INSTANCE_LOCATION>
-    replace: "{{ tcserver_instance_base }}/{{ item }}"
-  # Only iterate over the instance names for cleaner output
-  with_items: "{{ tcserver_instances | map(attribute='name') | list }}"

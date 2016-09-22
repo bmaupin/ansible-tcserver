@@ -1,8 +1,8 @@
 ---
 java_home: /usr/lib/jvm/java
 
+tcserver_group: pivotal
 tcserver_install_dir: /opt/pivotal/pivotal-tc-server-standard
 tcserver_instance_base: /var/opt/pivotal/pivotal-tc-server-standard
-tcserver_group: pivotal
 tcserver_java_version: 7
 tcserver_user: tcserver

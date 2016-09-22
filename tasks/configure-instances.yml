@@ -1,0 +1,91 @@
+---
+- name: "Create instance: {{ tcserver_instance.name }}"
+  shell: >
+    {{ tcserver_install_dir }}/tcruntime-instance.sh create
+    {% if "tomcat_major_version" in tcserver_instance %}-v {{ tomcat_latest_versions[tcserver_instance.tomcat_major_version] }}{% endif %}
+    {% if "port_jmx" in tcserver_instance %}--property base.jmx.port={{ tcserver_instance.port_jmx }}{% endif %}
+    {% if "port_ajp_http" in tcserver_instance or "port_ajp_https" in tcserver_instance %}-t ajp{% endif %}
+    {% if "port_ajp_http" in tcserver_instance %}--property ajp.http.port={{tcserver_instance.port_ajp_http}}{% endif %}
+    {% if "port_ajp_https" in tcserver_instance %}--property ajp.https.port={{tcserver_instance.port_ajp_https}}{% endif %}
+    {% if "cluster_node_name" in tcserver_instance %}-t cluster-node --property cluster-node.node.name={{tcserver_instance.cluster_node_name}}{% endif %}
+    {# TODO: is elastic memory still available? #}
+    {# {% if "elastic_memory" in tcserver_instance and tcserver_instance.elastic_memory %}-t elastic-memory{% endif %} #}
+    {% if "port_http" in tcserver_instance %}-t nio --property nio.http.port={{tcserver_instance.port_http}}{% endif %}
+    {% if "port_https" in tcserver_instance %}-t nio-ssl --property nio-ssl.https.port={{ tcserver_instance.port_https }}{% endif %}
+    {% if "port_http" in tcserver_instance and "port_https" in tcserver_instance %}--property nio.https.port={{tcserver_instance.port_https}}{% endif %}
+    -i {{ tcserver_instance_base }}/ {{ tcserver_instance.name }}
+  args:
+    creates: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}"
+  environment:
+    JAVA_HOME: "{{ java_home }}"
+
+- name: Configure init script
+  replace:
+    dest: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}/bin/init.d.sh"
+    regexp: <INSTANCE_LOCATION>
+    replace: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}"
+
+- name: Copy bin/setenv.sh
+  copy:
+    src: "{{ item }}"
+    dest: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}/bin/setenv.sh"
+    owner: "{{ tcserver_user }}"
+    group: "{{ tcserver_group }}"
+    mode: 0500
+  with_first_found:
+    - files:
+      - ../files/{{ tcserver_instance.name }}/bin/setenv.sh
+      - ../files/default/bin/setenv.sh
+      skip: true
+
+- name: Copy conf/context.xml
+  copy:
+    src: "{{ item }}"
+    dest: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}/conf/context.xml"
+    owner: "{{ tcserver_user }}"
+    group: "{{ tcserver_group }}"
+    mode: 0400
+  with_first_found:
+    - files:
+      - ../files/{{ tcserver_instance.name }}/conf/context.xml
+      - ../files/default/conf/context.xml
+      skip: true
+
+- name: Copy conf/logging.properties
+  copy:
+    src: "{{ item }}"
+    dest: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}/conf/logging.properties"
+    owner: "{{ tcserver_user }}"
+    group: "{{ tcserver_group }}"
+    mode: 0400
+  with_first_found:
+    - files:
+      - ../files/{{ tcserver_instance.name }}/conf/logging.properties
+      - ../files/default/conf/logging.properties
+      skip: true
+
+- name: Copy conf/server.xml
+  copy:
+    src: "{{ item }}"
+    dest: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}/conf/server.xml"
+    owner: "{{ tcserver_user }}"
+    group: "{{ tcserver_group }}"
+    mode: 0400
+  with_first_found:
+    - files:
+      - ../files/{{ tcserver_instance.name }}/conf/server.xml
+      - ../files/default/conf/server.xml
+      skip: true
+
+- name: Copy webapps/ROOT/index.jsp
+  copy:
+    src: "{{ item }}"
+    dest: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}/webapps/ROOT/index.jsp"
+    owner: "{{ tcserver_user }}"
+    group: "{{ tcserver_group }}"
+    mode: 0400
+  with_first_found:
+    - files:
+      - ../files/{{ tcserver_instance.name }}/webapps/ROOT/index.jsp
+      - ../files/default/webapps/ROOT/index.jsp
+      skip: true
