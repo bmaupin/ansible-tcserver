@@ -36,7 +36,7 @@
     - files:
       - ../files/{{ tcserver_instance.name }}/bin/setenv.sh
       - ../files/default/bin/setenv.sh
-      skip: true
+      skip: yes
 
 - name: Copy conf/context.xml
   copy:
@@ -49,7 +49,7 @@
     - files:
       - ../files/{{ tcserver_instance.name }}/conf/context.xml
       - ../files/default/conf/context.xml
-      skip: true
+      skip: yes
 
 - name: Copy conf/logging.properties
   copy:
@@ -62,7 +62,7 @@
     - files:
       - ../files/{{ tcserver_instance.name }}/conf/logging.properties
       - ../files/default/conf/logging.properties
-      skip: true
+      skip: yes
 
 - name: Copy conf/server.xml
   copy:
@@ -75,7 +75,7 @@
     - files:
       - ../files/{{ tcserver_instance.name }}/conf/server.xml
       - ../files/default/conf/server.xml
-      skip: true
+      skip: yes
 
 - name: Copy webapps/ROOT/index.jsp
   copy:
@@ -88,4 +88,4 @@
     - files:
       - ../files/{{ tcserver_instance.name }}/webapps/ROOT/index.jsp
       - ../files/default/webapps/ROOT/index.jsp
-      skip: true
+      skip: yes
