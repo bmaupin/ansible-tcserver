@@ -18,6 +18,8 @@
     creates: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}"
   environment:
     JAVA_HOME: "{{ java_home }}"
+  notify:
+    - Restart tcserver instance
 
 - name: Configure init script
   replace:
@@ -37,6 +39,8 @@
       - ../files/{{ tcserver_instance.name }}/bin/setenv.sh
       - ../files/default/bin/setenv.sh
       skip: yes
+  notify:
+    - Restart tcserver instance
 
 - name: Copy conf/context.xml
   copy:
@@ -50,6 +54,8 @@
       - ../files/{{ tcserver_instance.name }}/conf/context.xml
       - ../files/default/conf/context.xml
       skip: yes
+  notify:
+    - Restart tcserver instance
 
 - name: Copy conf/logging.properties
   copy:
@@ -63,6 +69,8 @@
       - ../files/{{ tcserver_instance.name }}/conf/logging.properties
       - ../files/default/conf/logging.properties
       skip: yes
+  notify:
+    - Restart tcserver instance
 
 - name: Copy conf/server.xml
   copy:
@@ -76,6 +84,8 @@
       - ../files/{{ tcserver_instance.name }}/conf/server.xml
       - ../files/default/conf/server.xml
       skip: yes
+  notify:
+    - Restart tcserver instance
 
 - name: Copy webapps/ROOT/index.jsp
   copy:
@@ -89,3 +99,13 @@
       - ../files/{{ tcserver_instance.name }}/webapps/ROOT/index.jsp
       - ../files/default/webapps/ROOT/index.jsp
       skip: yes
+  notify:
+    - Restart tcserver instance
+
+# This is so the restart handler will know which instance to restart
+- name: Set tcserver_instance_to_restart
+  set_fact:
+    tcserver_instance_to_restart: "{{ tcserver_instance.name }}"
+
+# Flush the handlers for each instance because otherwise variables required for restart will get overwritten
+- meta: flush_handlers

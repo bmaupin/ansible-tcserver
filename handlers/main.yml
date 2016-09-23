@@ -1,0 +1,9 @@
+---
+- name: Restart tcserver instance
+  # Do a stop/start instead of restart so it will work even if it's not already running
+  shell: >
+    set -m;
+    {{ tcserver_instance_base }}/{{ tcserver_instance_to_restart }}/bin/tcruntime-ctl.sh stop;
+    {{ tcserver_instance_base }}/{{ tcserver_instance_to_restart }}/bin/tcruntime-ctl.sh start
+  become: yes
+  become_user: "{{ tcserver_user }}"
