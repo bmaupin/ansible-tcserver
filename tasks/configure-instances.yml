@@ -1,7 +1,7 @@
 ---
 - name: "Create instance: {{ tcserver_instance.name }}"
   shell: >
-    {{ tcserver_install_dir }}/tcruntime-instance.sh create
+    {{ tcserver_install_base }}/tcruntime-instance.sh create
     {% if "tomcat_major_version" in tcserver_instance %}-v {{ tomcat_latest_versions[tcserver_instance.tomcat_major_version] }}{% endif %}
     {% if "port_jmx" in tcserver_instance %}--property base.jmx.port={{ tcserver_instance.port_jmx }}{% endif %}
     {% if "port_ajp_http" in tcserver_instance or "port_ajp_https" in tcserver_instance %}-t ajp{% endif %}
@@ -19,6 +19,7 @@
   environment:
     JAVA_HOME: "{{ java_home }}"
   notify:
+    - Enable tcserver instance
     - Restart tcserver instance
 
 - name: Configure init script
@@ -102,10 +103,10 @@
   notify:
     - Restart tcserver instance
 
-# This is so the restart handler will know which instance to restart
-- name: Set tcserver_instance_to_restart
+# This is so the handlers know which instance to work with
+- name: Set tcserver_instance_to_handle
   set_fact:
-    tcserver_instance_to_restart: "{{ tcserver_instance.name }}"
+    tcserver_instance_to_handle: "{{ tcserver_instance.name }}"
 
-# Flush the handlers for each instance because otherwise variables required for restart will get overwritten
+# Flush the handlers for each instance because otherwise variables required for handlers will get overwritten
 - meta: flush_handlers

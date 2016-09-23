@@ -1,9 +1,23 @@
 ---
+- name: Enable tcserver instance
+  command: systemctl enable tcserver@{{ tcserver_instance_to_handle }}.service
+  become: yes
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version == "7"
+
 - name: Restart tcserver instance
   # Do a stop/start instead of restart so it will work even if it's not already running
   shell: >
     set -m;
-    {{ tcserver_instance_base }}/{{ tcserver_instance_to_restart }}/bin/tcruntime-ctl.sh stop;
-    {{ tcserver_instance_base }}/{{ tcserver_instance_to_restart }}/bin/tcruntime-ctl.sh start
+    {{ tcserver_instance_base }}/{{ tcserver_instance_to_handle }}/bin/tcruntime-ctl.sh stop;
+    {{ tcserver_instance_base }}/{{ tcserver_instance_to_handle }}/bin/tcruntime-ctl.sh start
   become: yes
   become_user: "{{ tcserver_user }}"
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+  become: yes
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version == "7"

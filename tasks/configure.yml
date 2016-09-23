@@ -1,12 +1,12 @@
 ---
 - name: Get latest version of tomcat 7
-  shell: ls -d -r "{{ tcserver_install_dir }}/tomcat-7"* | head -1 | sed -e 's/^.*tomcat-//'
+  shell: ls -d -r "{{ tcserver_install_base }}/tomcat-7"* | head -1 | sed -e 's/^.*tomcat-//'
   register: tomcat_7_latest_version
   # Don't report this as changed
   changed_when: no
 
 - name: Get latest version of tomcat 8
-  shell: ls -d -r "{{ tcserver_install_dir }}/tomcat-8"* | head -1 | sed -e 's/^.*tomcat-//'
+  shell: ls -d -r "{{ tcserver_install_base }}/tomcat-8"* | head -1 | sed -e 's/^.*tomcat-//'
   register: tomcat_8_latest_version
   # Don't report this as changed
   changed_when: no

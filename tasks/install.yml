@@ -3,6 +3,7 @@
   shell: subscription-manager repos --list-enabled | grep -q rhel-{{ ansible_distribution_major_version }}-server-thirdparty-oracle-java-rpms || subscription-manager repos --enable=rhel-{{ ansible_distribution_major_version }}-server-thirdparty-oracle-java-rpms
   register: result
   changed_when: result.stdout.find('is enabled for this system') != -1
+  when: ansible_distribution == "RedHat"
 
 - name: Install Oracle Java {{ tcserver_java_version }} JRE
   package:
@@ -47,3 +48,15 @@
   package:
     name: pivotal-tc-server-standard
     state: latest
+
+- name: Copy tcserver service from template
+  template:
+    src: ../templates/tcserver@.service.j2
+    dest: /etc/systemd/system/tcserver@.service
+    owner: root
+    group: root
+  when:
+      - ansible_os_family == "RedHat"
+      - ansible_distribution_major_version == "7"
+  notify:
+    - Reload systemd
