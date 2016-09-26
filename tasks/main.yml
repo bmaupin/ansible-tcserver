@@ -1,7 +1,21 @@
 ---
+- name: Check if tc Server is installed
+  command: rpm -q pivotal-tc-server-standard
+  args:
+    # Hide warnings; there doesn't seem to be a way to only check package status using package/yum modules
+    warn: no
+  # Don't report this as changed
+  changed_when: no
+  # Don't fail if package isn't installed
+  failed_when: no
+  register: tc_server_installed
+  when: ansible_os_family == "RedHat"
+
 - name: Install tc Server
   include: install.yml
   become: yes
+  # Skip installation tasks if we can to save time
+  when: tc_server_installed.rc != 0
 
 - name: Configure tc Server
   include: configure.yml
