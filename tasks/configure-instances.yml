@@ -7,7 +7,7 @@
     {% if "port_ajp_http" in tcserver_instance or "port_ajp_https" in tcserver_instance %}-t ajp{% endif %}
     {% if "port_ajp_http" in tcserver_instance %}--property ajp.http.port={{tcserver_instance.port_ajp_http}}{% endif %}
     {% if "port_ajp_https" in tcserver_instance %}--property ajp.https.port={{tcserver_instance.port_ajp_https}}{% endif %}
-    {% if "cluster_node_name" in tcserver_instance %}-t cluster-node --property cluster-node.node.name={{tcserver_instance.cluster_node_name}}{% endif %}
+    {% if "cluster_node_prefix" in tcserver_instance %}-t cluster-node --property cluster-node.node.name={{ tcserver_instance.cluster_node_prefix }}-{{ play_hosts.index(inventory_hostname) + 1 }}{% endif %}
     {% if "port_http" in tcserver_instance %}-t nio --property nio.http.port={{tcserver_instance.port_http}}{% endif %}
     {% if "port_https" in tcserver_instance %}-t nio-ssl --property nio-ssl.https.port={{ tcserver_instance.port_https }}{% endif %}
     {% if "port_http" in tcserver_instance and "port_https" in tcserver_instance %}--property nio.https.port={{tcserver_instance.port_https}}{% endif %}

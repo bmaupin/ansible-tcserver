@@ -28,7 +28,7 @@ Ansible role for Pivotal tc Server
               - name: instance1
                 port_https: 8443
               - name: instance2
-                cluster_node_name: instance2-1
+                cluster_node_prefix: instance2
                 port_ajp_http: 8010
                 port_ajp_https: 8444
                 port_http: 8081
