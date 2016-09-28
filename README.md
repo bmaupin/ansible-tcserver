@@ -25,7 +25,7 @@ Ansible role for Pivotal tc Server
     - `cluster_node_prefix`: The cluster node name prefix. A numerical suffix will be appended that will be unique for each server in the play. If this is not provided, clustering will not be configured.
     - `port_ajp_http`: The AJP HTTP port. If `port_ajp_https` is provided but not `port_ajp_http`, tc Server will use port 8009 by default. If neither is provided, AJP will not be configured.
     - `port_ajp_https`: The AJP HTTPS port. This can be set to the same value as `port_https` if desired. If `port_ajp_http` is provided but not `port_ajp_https`, tc Server will use port 8443 by default. If neither is provided, AJP will not be configured.
-    - `port_http`: The HTTP port. If this isn't provided, an HTTP connector will not be created. If neither `port_http` nor `port_https` is provided, tc Server will configure an HTTP connector with the default port of 8080.
+    - `port_http`: The HTTP port. If `port_https` is provided but not `port_http`, an HTTP connector will not be created. If neither is provided, tc Server will configure an HTTP connector with the default port of 8080.
     - `port_https`: The HTTPS port. If this isn't provided, an HTTPS connector will not be created.
     - `port_jmx`: The JMX port. If this isn't provided, tc Server will use port 6969 by default.
     - `tomcat_major_version:`: The Tomcat major version, either 7 or 8. If this isn't provided, tc Server will use version 8 by default.
