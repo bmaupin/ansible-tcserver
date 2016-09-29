@@ -1,4 +1,10 @@
 ---
+- name: Install Python bindings for SELinux
+  package:
+    name: libselinux-python
+    state: latest
+  when: ansible_os_family == "RedHat"
+
 - name: Enable Oracle Java repo
   shell: subscription-manager repos --list-enabled | grep -q rhel-{{ ansible_distribution_major_version }}-server-thirdparty-oracle-java-rpms || subscription-manager repos --enable=rhel-{{ ansible_distribution_major_version }}-server-thirdparty-oracle-java-rpms
   register: result
@@ -9,11 +15,13 @@
   package:
     name: java-1.{{ tcserver_java_version }}.0-oracle
     state: latest
+  when: ansible_os_family == "RedHat"
 
 - name: Install Oracle Java {{ tcserver_java_version }} JDK
   package:
     name: java-1.{{ tcserver_java_version }}.0-oracle-devel
     state: latest
+  when: ansible_os_family == "RedHat"
 
 - name: Create {{ tcserver_group }} group
   group:
