@@ -17,14 +17,27 @@
   environment:
     JAVA_HOME: "{{ java_home }}"
   notify:
-    - Enable tcserver instance
+    - Enable tcserver instance (systemd)
+    - Enable tcserver instance (sysvinit)
     - Restart tcserver instance
 
-- name: Configure init script
+- name: Configure bin/init.d.sh
   replace:
     dest: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}/bin/init.d.sh"
     regexp: <INSTANCE_LOCATION>
     replace: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}"
+
+- name: Create symlink to bin/init.d.sh
+  file:
+    src: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}/bin/init.d.sh"
+    dest: /etc/init.d/{{ tcserver_init_prefix }}{{ tcserver_instance.name }}
+    owner: root
+    group: root
+    state: link
+  become_user: root
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version == "5" or ansible_distribution_major_version == "6"
 
 - name: Copy bin/setenv.sh
   copy:

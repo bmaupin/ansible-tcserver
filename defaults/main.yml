@@ -2,6 +2,7 @@
 java_home: /usr/lib/jvm/java
 
 tcserver_group: pivotal
+tcserver_init_prefix: tcserver-
 tcserver_install_base: /opt/pivotal/pivotal-tc-server-standard
 tcserver_instance_base: /var/opt/pivotal/pivotal-tc-server-standard
 tcserver_java_version: 7

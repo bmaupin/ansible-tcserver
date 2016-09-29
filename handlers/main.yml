@@ -1,10 +1,17 @@
 ---
-- name: Enable tcserver instance
+- name: Enable tcserver instance (systemd)
   command: systemctl enable tcserver@{{ tcserver_instance_to_handle }}.service
   become: yes
   when:
     - ansible_os_family == "RedHat"
     - ansible_distribution_major_version == "7"
+
+- name: Enable tcserver instance (sysvinit)
+  command: /sbin/chkconfig --add {{ tcserver_init_prefix }}{{ tcserver_instance_to_handle }}
+  become: yes
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version == "5" or ansible_distribution_major_version == "6"
 
 - name: Restart tcserver instance
   # Do a stop/start instead of restart so it will work even if it's not already running
