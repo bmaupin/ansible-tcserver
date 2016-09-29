@@ -2,16 +2,12 @@ Ansible role for Pivotal tc Server
 
 **Features**
 
-- Compatible with RHEL 7
+- Compatible with RHEL 5/6/7
 - Installs Pivotal tc Server
 - Creates tc Server instances
 - Enables tc Server instances at boot
 - Supports instance-specific configurations
 - Restarts tc Server instances as necessary
-
-**Wishlist**
-
-- Add support for RHEL 6
 
 **Instructions**
 
