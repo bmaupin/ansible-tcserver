@@ -99,21 +99,6 @@
   notify:
     - Restart tcserver instance
 
-- name: Copy webapps/ROOT/index.jsp
-  copy:
-    src: "{{ item }}"
-    dest: "{{ tcserver_instance_base }}/{{ tcserver_instance.name }}/webapps/ROOT/index.jsp"
-    owner: "{{ tcserver_user }}"
-    group: "{{ tcserver_group }}"
-    mode: 0400
-  with_first_found:
-    - files:
-      - ../files/{{ tcserver_instance.name }}/webapps/ROOT/index.jsp
-      - ../files/default/webapps/ROOT/index.jsp
-      skip: yes
-  notify:
-    - Restart tcserver instance
-
 # This is so the handlers know which instance to work with
 - name: Set tcserver_instance_to_handle
   set_fact:
