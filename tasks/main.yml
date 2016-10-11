@@ -10,17 +10,20 @@
   failed_when: no
   register: tc_server_installed
   when: ansible_os_family == "RedHat"
+  tags: [tcserver, tcserver-install]
 
 - name: Install tc Server
   include: install.yml
   become: yes
   # Skip installation tasks if we can to save time
   when: tc_server_installed.rc != 0
+  tags: [tcserver, tcserver-install]
 
 - name: Configure tc Server
   include: configure.yml
   become: yes
   become_user: "{{ tcserver_user }}"
+  tags: [tcserver, tcserver-configure]
 
 - name: Configure instances
   include: configure-instances.yml
@@ -29,3 +32,4 @@
   with_items: "{{ tcserver_instances }}"
   loop_control:
     loop_var: tcserver_instance
+  tags: [tcserver, tcserver-configure]
