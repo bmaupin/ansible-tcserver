@@ -5,6 +5,9 @@ After=network.target
 [Service]
 Type=forking
 
+# This is necessary instead of calling the instance's tcruntime-ctl.sh script because "the first argument of the command
+# line (i.e. the program to execute) may not include specifiers"
+# (https://www.freedesktop.org/software/systemd/man/systemd.service.html#Command%20lines)
 WorkingDirectory={{ tcserver_instance_base }}
 ExecStart={{ tcserver_install_base }}/tcruntime-ctl.sh %i start
 ExecStop={{ tcserver_install_base }}/tcruntime-ctl.sh %i stop
@@ -12,8 +15,13 @@ ExecStop={{ tcserver_install_base }}/tcruntime-ctl.sh %i stop
 User={{ tcserver_user }}
 Group={{ tcserver_group }}
 
+# Don't kill any processes; the command in ExecStop will take care of stopping the service
+# (https://www.freedesktop.org/software/systemd/man/systemd.kill.html#KillMode=)
 KillMode=none
 
+# Code 1 is given if the instance is stopped using the instance's tcruntime-ctl.sh script
+# Code 143 is given if the instance is stopped using systemd
+# (https://www.freedesktop.org/software/systemd/man/systemd.service.html#SuccessExitStatus=)
 SuccessExitStatus=1 143
 
 [Install]
