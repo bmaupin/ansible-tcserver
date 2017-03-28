@@ -21,6 +21,8 @@
     set -m;
     {{ tcserver_instance_base }}/{{ tcserver_instance_to_handle }}/bin/tcruntime-ctl.sh stop;
     {{ tcserver_instance_base }}/{{ tcserver_instance_to_handle }}/bin/tcruntime-ctl.sh start
+  args:
+    executable: /bin/bash
   become: yes
   become_user: "{{ tcserver_user }}"
 
