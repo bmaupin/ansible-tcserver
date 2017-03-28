@@ -5,8 +5,9 @@ After=network.target
 [Service]
 Type=forking
 
-ExecStart={{ tcserver_install_base }}/tcruntime-ctl.sh -i {{ tcserver_instance_base }} %i start
-ExecStop={{ tcserver_install_base }}/tcruntime-ctl.sh -i {{ tcserver_instance_base }} %i stop
+WorkingDirectory={{ tcserver_instance_base }}
+ExecStart={{ tcserver_install_base }}/tcruntime-ctl.sh %i start
+ExecStop={{ tcserver_install_base }}/tcruntime-ctl.sh %i stop
 
 User={{ tcserver_user }}
 Group={{ tcserver_group }}
